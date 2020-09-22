@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.demo.dao.UserGroupMapper">
+    <resultMap id="BaseResultMap" type="com.example.demo.bean.UserGroup">
+        <id column="usergroupid" property="usergroupid" jdbcType="BIGINT"/>
+        <result column="usergroupname" property="usergroupname" jdbcType="VARCHAR"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="flag" property="flag" jdbcType="TINYINT"/>
+        <result column="creator" property="creator" jdbcType="BIGINT"/>
+        <result column="createtime" property="createtime" jdbcType="TIMESTAMP"/>
+        <result column="modifier" property="modifier" jdbcType="BIGINT"/>
+        <result column="modifytime" property="modifytime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    usergroupid, usergroupname, remark, flag, creator, createtime, modifier, modifytime
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from usergroup
+        where usergroupid = #{usergroupid,jdbcType=BIGINT} and flag =0
+    </select>
+    <insert id="insertSelective" parameterType="com.example.demo.bean.UserGroup">
+        <selectKey keyColumn="usergroupid" keyProperty="usergroupid" order="BEFORE" resultType="java.lang.Long">
+            select UUID_SHORT();
+        </selectKey>
+        insert into usergroup
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            usergroupid,
+            <if test="usergroupname != null">
+                usergroupname,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+            flag,
+            <if test="creator != null">
+                creator,
+            </if>
+            createtime,
+            <if test="modifier != null">
+                modifier,
+            </if>
+            <if test="modifytime != null">
+                modifytime,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{usergroupid,jdbcType=BIGINT},
+            <if test="usergroupname != null">
+                #{usergroupname,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="flag != null">
+                #{flag,jdbcType=TINYINT},
+            </if>
+            <if test="flag == null">
+                0,
+            </if>
+            <if test="creator != null">
+                #{creator,jdbcType=BIGINT},
+            </if>
+            CURRENT_TIMESTAMP,
+            <if test="modifier != null">
+                #{modifier,jdbcType=BIGINT},
+            </if>
+            <if test="modifytime != null">
+                #{modifytime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.example.demo.bean.UserGroup">
+        update usergroup
+        <set>
+            <if test="usergroupname != null">
+                usergroupname = #{usergroupname,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="modifier != null">
+                modifier = #{modifier,jdbcType=BIGINT},
+            </if>
+            modifytime = CURRENT_TIMESTAMP,
+        </set>
+        where usergroupid = #{usergroupid,jdbcType=BIGINT}
+    </update>
+    <!-- new add -->
+    <update id="deleteByGroupId" parameterType="com.example.demo.bean.UserGroup">
+        update usergroup
+        <set>
+            flag =1,
+            <if test="modifier != null">
+                modifier = #{modifier,jdbcType=BIGINT},
+            </if>
+            modifytime = CURRENT_TIMESTAMP
+        </set>
+        where usergroupid = #{usergroupid,jdbcType=BIGINT}
+    </update>
+
+    <select id="listGroupAndMember" parameterType="com.example.demo.bean.po.ReceiveBean"
+            resultType="com.example.demo.bean.vo.UserGroupListVo">
+<bind name="page" value="pageNo-1"/>
+        select usergroup.usergroupid,
+        usergroup.usergroupname,
+        group_concat(userinfo.username) as uergroupmembers
+        from usergroup,usergroupmember,userinfo
+        where usergroup.usergroupid = usergroupmember.usergroupid
+        and usergroupmember.objectid = userinfo.userid
+        and usergroupmember.flag = 0
+        <if test="searchKey != null">
+            and usergroupname like concat('%',#{searchKey,jdbcType=VARCHAR},'%')
+        </if>
+        group by usergroup.usergroupid
+        <if test="field != null and type != null">
+            order by ${field} ${type}
+        </if>
+        <if test="pageNo != null and pageSize != null">
+            limit #{page,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+        </if>
+    </select>
+    <select id="listGroupAndMemberByJoin" parameterType="com.example.demo.bean.po.ReceiveBean"
+            resultType="com.example.demo.bean.vo.UserGroupListVo">
+        SELECT
+        usergroup.usergroupid,
+        usergroup.usergroupname,
+        GROUP_CONCAT( userinfo.username ) AS uerGroupMember
+        FROM
+        ( usergroup LEFT JOIN usergroupmember ON usergroup.usergroupid = usergroupmember.usergroupid )
+        LEFT JOIN userinfo ON usergroupmember.objectid = userinfo.userid
+        WHERE
+        usergroup.usergroupid = usergroupmember.usergroupid
+        AND usergroupmember.objectid = userinfo.userid
+        AND usergroupmember.flag = 0
+        <if test="searchKey != null">
+            and usergroup.usergroupname like concat('%',#{searchKey,jdbcType=VARCHAR},'%')
+        </if>
+        GROUP BY
+        usergroup.usergroupid
+        <if test="field != null and type != null">
+            ORDER BY ${field} ${type}
+        </if>
+        LIMIT #{pageNo,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+    </select>
+    <select id="selectByGroupName" parameterType="com.example.demo.bean.UserGroup"
+            resultType="com.example.demo.bean.UserGroup">
+        select
+        <include refid="Base_Column_List"/>
+        from usergroup
+        where usergroupname = #{usergroupname,jdbcType=VARCHAR}
+    </select>
+    <!-- new add -->
+</mapper>

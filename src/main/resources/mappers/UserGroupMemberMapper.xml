@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.demo.dao.UserGroupMemberMapper">
+    <resultMap id="BaseResultMap" type="com.example.demo.bean.UserGroupMember">
+        <id column="groupmemberid" property="groupmemberid" jdbcType="BIGINT"/>
+        <result column="usergroupid" property="usergroupid" jdbcType="BIGINT"/>
+        <result column="objecttype" property="objecttype" jdbcType="INTEGER"/>
+        <result column="objectid" property="objectid" jdbcType="BIGINT"/>
+        <result column="flag" property="flag" jdbcType="TINYINT"/>
+        <result column="creator" property="creator" jdbcType="BIGINT"/>
+        <result column="createtime" property="createtime" jdbcType="TIMESTAMP"/>
+        <result column="modifier" property="modifier" jdbcType="BIGINT"/>
+        <result column="modifytime" property="modifytime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    groupmemberid, usergroupid, objecttype, objectid, flag, creator, createtime, modifier, 
+    modifytime
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from usergroupmember
+        where groupmemberid = #{groupmemberid,jdbcType=BIGINT} and flag = 0
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from usergroupmember
+    where groupmemberid = #{groupmemberid,jdbcType=BIGINT}
+  </delete>
+    <insert id="insertSelective" parameterType="com.example.demo.bean.UserGroupMember">
+        insert into usergroupmember
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="groupmemberid != null">
+                groupmemberid,
+            </if>
+            <if test="usergroupid != null">
+                usergroupid,
+            </if>
+            <if test="objecttype != null">
+                objecttype,
+            </if>
+            <if test="objectid != null">
+                objectid,
+            </if>
+            <if test="flag != null">
+                flag,
+            </if>
+            <if test="creator != null">
+                creator,
+            </if>
+            <if test="createtime != null">
+                createtime,
+            </if>
+            <if test="modifier != null">
+                modifier,
+            </if>
+            <if test="modifytime != null">
+                modifytime,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="groupmemberid != null">
+                #{groupmemberid,jdbcType=BIGINT},
+            </if>
+            <if test="usergroupid != null">
+                #{usergroupid,jdbcType=BIGINT},
+            </if>
+            <if test="objecttype != null">
+                2,
+            </if>
+            <if test="objectid != null">
+                #{objectid,jdbcType=BIGINT},
+            </if>
+            <if test="flag != null">
+                #{flag,jdbcType=TINYINT},
+            </if>
+            <if test="creator != null">
+                #{creator,jdbcType=BIGINT},
+            </if>
+            <if test="createtime != null">
+                #{createtime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="modifier != null">
+                #{modifier,jdbcType=BIGINT},
+            </if>
+            <if test="modifytime != null">
+                #{modifytime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.example.demo.bean.UserGroupMember">
+        update usergroupmember
+        <set>
+            <if test="usergroupid != null">
+                usergroupid = #{usergroupid,jdbcType=BIGINT},
+            </if>
+            <if test="objectid != null">
+                objectid = #{objectid,jdbcType=BIGINT},
+            </if>
+            <if test="flag != null">
+                flag = #{flag,jdbcType=TINYINT},
+            </if>
+            <if test="creator != null">
+                creator = #{creator,jdbcType=BIGINT},
+            </if>
+            <if test="createtime != null">
+                createtime = #{createtime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="modifier != null">
+                modifier = #{modifier,jdbcType=BIGINT},
+            </if>
+            <if test="modifytime != null">
+                modifytime = #{modifytime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where groupmemberid = #{groupmemberid,jdbcType=BIGINT}
+    </update>
+    <!-- new add -->
+    <insert id="insertListMember">
+        insert into usergroupmember
+        (groupmemberid,usergroupid,objectid,flag,creator,modifier,createtime,modifytime)
+        values
+        <foreach item="objectid" collection="objectid" separator=",">
+            (
+            UUID_SHORT(),#{usergroup.usergroupid},#{objectid,jdbcType=BIGINT},0,
+            <if test="usergroup.modifier != null">
+                #{usergroup.modifier},#{usergroup.modifier},
+            </if>
+            <if test="usergroup.modifier == null">
+                #{usergroup.creator},#{usergroup.creator},
+            </if>
+            CURRENT_TIMESTAMP,CURRENT_TIMESTAMP
+            )
+        </foreach>
+    </insert>
+    <update id="deleteByUserGroupId" parameterType="com.example.demo.bean.UserGroup">
+        update usergroupmember
+        <set>
+            flag =1,
+            <if test="modifier != null">
+                modifier = #{modifier,jdbcType=BIGINT},
+            </if>
+            modifytime = CURRENT_TIMESTAMP
+        </set>
+        where usergroupid = #{usergroupid,jdbcType=BIGINT}
+    </update>
+    <select id="selectByGroupId" parameterType="java.lang.Long" resultType="com.example.demo.bean.UserGroupMember">
+        select * from usergroupmember
+        where usergroupid = #{userGroupId,jdbcType=BIGINT} and flag = 0
+    </select>
+    <!-- new add -->
+</mapper>
