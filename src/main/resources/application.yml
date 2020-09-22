@@ -8,6 +8,6 @@ spring:
     username: root
     password: 999999
     driver-class-name: com.mysql.jdbc.Driver
-mybatis:
+mybatis-plus:
+  type-aliases-package: com.example.demo.bean
   mapper-locations: classpath:mappers/*.xml
-  type-aliases-package: com.example.demo

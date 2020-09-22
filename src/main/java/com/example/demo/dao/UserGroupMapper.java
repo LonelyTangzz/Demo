@@ -1,6 +1,5 @@
 package com.example.demo.dao;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.demo.bean.UserGroup;
 import com.example.demo.bean.po.ReceiveBean;
 import com.example.demo.bean.vo.UserGroupListVo;
@@ -16,7 +15,7 @@ import java.util.List;
  */
 @Mapper
 @Repository
-public interface UserGroupMapper extends BaseMapper<UserGroup> {
+public interface UserGroupMapper  {
 
     /**
      * 插入一个新的用户组.
