@@ -23,8 +23,8 @@ import java.util.Date;
 @Accessors(chain = true)
 @AllArgsConstructor
 @NoArgsConstructor
-@TableName("userinfo")
-@ApiModel(value = "UserGroup对象", description = "用户对象")
+@TableName("usergroup")
+@ApiModel(value = "UserGroup对象", description = "用户组对象")
 public class UserGroup implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -44,13 +44,26 @@ public class UserGroup implements Serializable {
     @TableField("remark")
     private String remark;
 
+    @NotNull
+    @ApiModelProperty(value = "删除标志", example = "0")
+    @TableField("flag")
     private Byte flag;
 
+    @NotNull
+    @ApiModelProperty(value = "创建者", example = "1")
+    @TableField("creator")
     private Long creator;
 
+    @NotNull
+    @ApiModelProperty(value = "创建时间", example = "2020-9-20 13:14")
+    @TableField("createtime")
     private Date createtime;
 
+    @ApiModelProperty(value = "修改者", example = "1")
+    @TableField("modifier")
     private Long modifier;
 
+    @ApiModelProperty(value = "修改时间", example = "2020-9-20 13:14")
+    @TableField("modifytime")
     private Date modifytime;
 }

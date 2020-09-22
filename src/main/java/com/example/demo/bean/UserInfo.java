@@ -1,8 +1,14 @@
 package com.example.demo.bean;
 
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
+import lombok.experimental.Accessors;
 import org.springframework.stereotype.Repository;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -11,11 +17,18 @@ import java.util.Date;
  * @date 2020/8/14 12:03
  */
 @Data
-@Repository
+@Accessors(chain = true)
+@AllArgsConstructor
+@NoArgsConstructor
+@TableName("userinfo")
+@ApiModel(value = "User对象", description = "用户对象")
 public class UserInfo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @NotNull
+    @ApiModelProperty(value = "用户ID", example = "自动生成uuid()")
+    @TableId("userid")
     private Long userid;
 
     private String username;
